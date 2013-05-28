@@ -27,16 +27,19 @@
 (defun get-entity-val (entity val)
   (funcall (intern (concatenate 'string "ENTITY-" (string val))) (cdr (assoc entity *entities*))))
 (defun entity-gen () nil)
-(defun player-gen (&key (name "Casimir") (hp 20) (magic 16) (type 'player) (y (random *height*)) (x (random *height*))) (make-entity :hp hp :magic magic :type type :x x :y y :name name))
-(defun create-entites ()
-  (setf player (player-gen))
-  (setf mob (make-entity)))
+(defun player-gen (&key (name "Casimir") (hp 20) (magic 16)
+		(type 'player) (y (random *height*)) (x (random *width*)))
+	(make-entity :hp hp :magic magic :type type :x x :y y :name name))
+(defun create-stock-entites ()
+  (register-entity 'player :name "The Choosen One" :x (random *width*) :y (random *height*))
+  (register-entity 'mob :name "The Mob One" :x (random *width*) :y (random *height*)))
 (defun draw-map (entities world)
-  (loop for x in *hight*
-	do (loop for y in *width*
-		 do (print (cond ((equal `(,x . ,y) (get-coord 'player)) #\@)
+  (loop for y to *height*
+	do (loop for x to *width*
+		 do (princ (cond ((equal `(,x . ,y) (get-coord 'player)) #\@)
 				 ((equal `(,x . ,y) (get-coord 'mob)) #\M)
-				 (t #\.))))))
+				 (t #\.))))
+		(fresh-line)))
 (defun get-coord (entity)
   `(,(entity-x (cdr (assoc entity *entities*))) . ,(entity-y (cdr (assoc 'player *entities*)))))
 (defun set-coord (entity coord)
@@ -51,5 +54,4 @@
 (defun walk (entity dir &optional (x 1))
   (cond ((<= (entity-dexterity entity) x)
 	 (set-coord-relative entity dir x))))
-(defun rule (move gamestate) ())
-(defun next-state (current-state player-move rules) ())
+
