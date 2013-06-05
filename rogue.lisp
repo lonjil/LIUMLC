@@ -1,8 +1,6 @@
 (ql:quickload "cffi")
 (pushnew (truename ".") cffi:*foreign-library-directories*)
-;(ql:quickload "cl-charms")
-(load #P"charms\\package.lisp")
-(load #P"charms\\charms.lisp")
+(ql:quickload "cl-charms")
 
 (defparameter *height* 10)
 (defparameter *width* 10)
