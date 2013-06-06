@@ -10,6 +10,8 @@
 (defvar *frames* 0)
 (defvar *entities* (make-hash-table :test #'equal))
 (defvar *messages* ())
+(defvar *message-row* 0)
+(defvar *message-history* ())
 (setq *world* (progn
 		(let ((world nil))
 		  (loop for x to *height*
@@ -115,6 +117,15 @@
 		(charms:printw
 			(format nil "Distance: ~$  " (entity-distance 'player 'mob)))
 		(charms:move (+ *height* 1 3) 0) (charms:printw (format nil "Version: ~a" *version*))
+		(if *messages*
+			(progn
+				(charms:move *message-row* (+ *width* 10))
+				(charms:printw (format nil (format nil "~s             " (string (car *messages*)))))
+				(push (car *messages*) *message-history*)
+				(pop *messages*)
+				(incf *message-row*)
+				(setf *message-row* (mod *message-row* 20))))
+		
 		(let ((cmd (code-char (charms:wgetch charms:*stdscr*))))
 			(case cmd
 				((#\4 #\h) (walk 'player 'left))
