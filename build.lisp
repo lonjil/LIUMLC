@@ -13,4 +13,4 @@
 							:EXECUTABLE t
 							:NORC t)
 #+clisp (exit)
-(format t "I don't have settings for your lisp implementation")
+#-(or clisp sbcl) (error "I'm not configured for your lisp implementation")
