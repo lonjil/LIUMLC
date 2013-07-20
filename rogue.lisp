@@ -101,7 +101,7 @@
 	(charms:initscr)
 	(charms:raw)
 	(charms:noecho)
-	(charms:curs-set 0)
+	;(charms:curs-set 0)
 	(charms:nodelay charms:*stdscr* 1)
 	(charms:keypad charms:*stdscr* 1)
 	(charms:erase)
