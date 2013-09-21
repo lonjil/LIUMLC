@@ -36,16 +36,16 @@
 
 ;;; Library loading
 #-quicklisp (error "Got quicklisp?")
-#+quicklisp (progn	#-cl-charms (ql:quickload :cl-charms) 
-					#-swank (when *swank-debug* (ql:quickload :swank) (swank:create)))
+#+quicklisp (progn #-cl-charms (ql:quickload :cl-charms) 
+		   #-swank (when *swank-debug* (ql:quickload :swank) (swank:create)))
 
 
 ;;; Package defining
 (defvar cl-user::package-once
-		(defpackage :yadril2
-					(:nicknames :yadril)
-					(:documentation "Contains yadril code 'n stuff")
-					(:use :common-lisp :cl-charms)))
+  (defpackage :yadril2
+    (:nicknames :yadril)
+    (:documentation "Contains yadril code 'n stuff")
+    (:use :common-lisp :cl-charms)))
 
 ;;; Variable defining
 (defvar *height* 10)
@@ -62,56 +62,56 @@
     ;; expansion of a defclass and signal them in a single go.
     (multiple-value-bind (metaclass canonical-options)
         (sb-pcl::canonize-defclass-options name options)
-    (let ((canonical-slots (sb-pcl::canonize-defclass-slots name direct-slots env))
-          ;; DEFSTRUCT-P should be true if the class is defined
-          ;; with a metaclass STRUCTURE-CLASS, so that a DEFSTRUCT
-          ;; is compiled for the class.
-          (defstruct-p (and (eq sb-pcl::**boot-state** 'complete)
-                            (let ((mclass (find-class metaclass nil)))
-                              (and mclass
-                                   (sb-pcl::*subtypep
-                                    mclass
-                                    sb-pcl::*the-class-structure-class*))))))
-      (let* ((defclass-form
-              `(let ,(mapcar #'cdr sb-pcl::*initfunctions-for-this-defclass*)
-                 (sb-pcl::load-defclass ,name
-                                ',metaclass
-                                ,direct-superclasses
-                                (list ,@canonical-slots)
-                                (list ,@(apply #'append
-                                               (when defstruct-p
-                                                 '(:from-defclass-p t))
-                                                canonical-options))
-                                ',sb-pcl::*readers-for-this-defclass*
-                                ',sb-pcl::*writers-for-this-defclass*
-                                ',sb-pcl::*slot-names-for-this-defclass*
-                                (sb-c:source-location)
-                                ',(sb-pcl::safe-code-p env)))))
-        (if defstruct-p
-            (progn
-              ;; FIXME: (YUK!) Why do we do this? Because in order
-              ;; to make the defstruct form, we need to know what
-              ;; the accessors for the slots are, so we need already
-              ;; to have hooked into the CLOS machinery.
-              ;;
-              ;; There may be a better way to do this: it would
-              ;; involve knowing enough about PCL to ask "what will
-              ;; my slot names and accessors be"; failing this, we
-              ;; currently just evaluate the whole kaboodle, and
-              ;; then use CLASS-DIRECT-SLOTS. -- CSR, 2002-06-07
-              (eval defclass-form)
-              (let* ((include (or (and direct-superclasses
-                                       (find-class (car direct-superclasses) nil))
-                                  (and (not (eq name 'structure-object))
-                                       sb-pcl::*the-class-structure-object*)))
-                     (defstruct-form (sb-pcl::make-structure-class-defstruct-form
-                                      name (sb-pcl::class-direct-slots (find-class name))
-                                      include)))
-                `(progn
-                   (eval-when (:compile-toplevel :load-toplevel :execute)
-                     ,defstruct-form) ; really compile the defstruct-form
-                   (eval-when (:compile-toplevel :load-toplevel :execute)
-                     ,defclass-form))))
+      (let ((canonical-slots (sb-pcl::canonize-defclass-slots name direct-slots env))
+	    ;; DEFSTRUCT-P should be true if the class is defined
+	    ;; with a metaclass STRUCTURE-CLASS, so that a DEFSTRUCT
+	    ;; is compiled for the class.
+	    (defstruct-p (and (eq sb-pcl::**boot-state** 'complete)
+			      (let ((mclass (find-class metaclass nil)))
+				(and mclass
+				     (sb-pcl::*subtypep
+				      mclass
+				      sb-pcl::*the-class-structure-class*))))))
+	(let* ((defclass-form
+		 `(let ,(mapcar #'cdr sb-pcl::*initfunctions-for-this-defclass*)
+		    (sb-pcl::load-defclass ,name
+					   ',metaclass
+					   ,direct-superclasses
+					   (list ,@canonical-slots)
+					   (list ,@(apply #'append
+							  (when defstruct-p
+							    '(:from-defclass-p t))
+							  canonical-options))
+					   ',sb-pcl::*readers-for-this-defclass*
+					   ',sb-pcl::*writers-for-this-defclass*
+					   ',sb-pcl::*slot-names-for-this-defclass*
+					   (sb-c:source-location)
+					   ',(sb-pcl::safe-code-p env)))))
+	  (if defstruct-p
+	      (progn
+		;; FIXME: (YUK!) Why do we do this? Because in order
+		;; to make the defstruct form, we need to know what
+		;; the accessors for the slots are, so we need already
+		;; to have hooked into the CLOS machinery.
+		;;
+		;; There may be a better way to do this: it would
+		;; involve knowing enough about PCL to ask "what will
+		;; my slot names and accessors be"; failing this, we
+		;; currently just evaluate the whole kaboodle, and
+		;; then use CLASS-DIRECT-SLOTS. -- CSR, 2002-06-07
+		(eval defclass-form)
+		(let* ((include (or (and direct-superclasses
+					 (find-class (car direct-superclasses) nil))
+				    (and (not (eq name 'structure-object))
+					 sb-pcl::*the-class-structure-object*)))
+		       (defstruct-form (sb-pcl::make-structure-class-defstruct-form
+					name (sb-pcl::class-direct-slots (find-class name))
+					include)))
+		  `(progn
+		     (eval-when (:compile-toplevel :load-toplevel :execute)
+		       ,defstruct-form) ; really compile the defstruct-form
+		     (eval-when (:compile-toplevel :load-toplevel :execute)
+		       ,defclass-form))))
             `(progn
                ;; By telling the type system at compile time about
                ;; the existence of a class named NAME, we can avoid
@@ -133,88 +133,88 @@
 
 ;;; Other stuff
 (defun gen-floor (&optional (dlvl *dlvl*))
-	(if level
-		(let ((world (make-hash-table :test 'equal)))
-			 (loop for x to *height*
-				do (loop for y to *width*
-					do (setf (gethash (cons x y) world) 'floor)))
-			(setf (gethash (cons (random *height*) (random *width*)) 
-						   world)
-				  'down)
-			(setf (gethash (cons (random *height*) (random *width*)) 
-						   world)
-				  'up))))
+  (if level
+      (let ((world (make-hash-table :test 'equal)))
+	(loop for x to *height*
+	      do (loop for y to *width*
+		       do (setf (gethash (cons x y) world) 'floor)))
+	(setf (gethash (cons (random *height*) (random *width*)) 
+		       world)
+	      'down)
+	(setf (gethash (cons (random *height*) (random *width*)) 
+		       world)
+	      'up))))
 (defun cat-sym/string (&rest blargh)
-	(intern (apply #'concatenate 'string (loop for x in blargh collect (string-upcase (string x))))))
+  (intern (apply #'concatenate 'string (loop for x in blargh collect (string-upcase (string x))))))
 
-(defclass monster-base ()
-	((name		:accessor name
-				:initform "I've been a bad programmer"
-				:initarg :name)
-	 (hp		:accessor hp
-				:initform 10
-				:initarg :hp)
-	 (str		:accessor str
-				:initform 10
-				:initarg :str)
-	 (mag		:accessor mag
-				:initform 10
-				:initarg :mag)
-	 (x			:accessor x
-				:initarg :x)
-	 (y			:accessor y
-				:initarg :y)
-	 (dlvl		:accessor dlvl
-				:initform *dlvl*
-				:initarg :dlvl)))
-(defun make-monster (monster-name &rest proplist)
-	(let ((slots (loop for (key value . rest) in proplist by #'cddr
-					   collect (list key :initform value :initarg (cat-sym/string ":" 'monster- value)))))
-		(defclass* monster-name '() slots)))
+(defclass monster ()
+  ((name		:accessor name
+			:initform "I've been a bad programmer"
+			:initarg :name)
+   (hp		        :accessor hp
+			:initform 10
+			:initarg :hp)
+   (str                 :accessor str
+			:initform 10
+			:initarg :str)
+   (mag                 :accessor mag
+		        :initform 10
+		        :initarg :mag)
+   (x			:accessor x
+			:initarg :x)
+   (y			:accessor y
+			:initarg :y)
+   (dlvl		:accessor dlvl
+			:initform *dlvl*
+			:initarg :dlvl)))
+(defclass human (monster)
+  ())
+(defclass ooze (monster)
+  ((hp  :initform 4)
+   (str :initform 3)
+   (mag :initform 1)))
 
 (defun gen-monsters ()
-	(list		(make-monster 'base-monster :name "Hero"
-										:hp 12)
-				(make-instance 'base-monster :name "Blob"
-										:hp 4)))
+  (list (find-class 'human)
+	(find-class 'ooze)))
 (defun gen-items ()
-	())
+  ())
 
 (defclass dlvl ()
-	((floor		:accessor	lvl-floor
-				:initform	(gen-floor)
-				:initarg	:floor)
-	 (entities	:accessor	entites
-	 			:initform	(make-hash-table)
-	 			:initarg	:entities)))
+  ((floor		:accessor	lvl-floor
+			:initform	(gen-floor)
+			:initarg	:floor)
+   (entities	        :accessor	entites
+			:initform	(make-hash-table)
+			:initarg	:entities)))
 (defclass world ()
-	((levels	:accessor	levels
-				:initform	(make-hash-table)
-				:initarg 	:levels)
-	 (monsters	:accessor	monsters
-	 			:initform	(gen-monsters)
-	 			:initarg	:monsters)
-	 (items		:accessor	items
-	 			:initform	(gen-items)
-	 			:initarg 	:items)
-	 (misc		:accessor misc
-	 			:initform nil
-	 			:initarg misc)))
+  ((levels	:accessor	levels
+		:initform	(make-hash-table)
+		:initarg 	:levels)
+   (monsters	:accessor	monsters
+		:initform	(gen-monsters)
+		:initarg	:monsters)
+   (items	:accessor	items
+		:initform	(gen-items)
+		:initarg 	:items)
+   (misc	:accessor       misc
+		:initform       nil
+		:initarg        misc)))
 
 
 (defun get-level (&optional (lvl *dlvl*) (world world))
-	(gethash lvl (levels world)))
+  (gethash lvl (levels world)))
 ;(defmethod get-coord-of ((obj monster))
 ;	)
 
 (defun draw-map (&optional (y1 2) (x1 0))
   (loop for y to *height* and y-curs from y1 to (+ *height* y1 -1)
 	do (loop for x to *width* and x-curs from x1 to (+ *width* x1 -1)
-		do (move y-curs x-curs)
-		(printw (string
-				(cond ((equal `(,x . ,y) (get-coord 'player)) #\@)
-					((equal `(,x . ,y) (get-coord 'mob)) #\M)
-					((equal (cdr (assoc (cons x y) *level* :test #'equal)) 'up) #\<)
-					((equal (cdr (assoc (cons x y) *level* :test #'equal)) 'down) #\>)
-					((equal (cdr (assoc `(,x . ,y) *level* :test #'equal)) 'floor)  #\.)
-					(t #\Space)))))))
+		 do (move y-curs x-curs)
+		 (printw (string
+			  (cond ((equal `(,x . ,y) (get-coord 'player)) #\@)
+				((equal `(,x . ,y) (get-coord 'mob)) #\M)
+				((equal (cdr (assoc (cons x y) *level* :test #'equal)) 'up) #\<)
+				((equal (cdr (assoc (cons x y) *level* :test #'equal)) 'down) #\>)
+				((equal (cdr (assoc `(,x . ,y) *level* :test #'equal)) 'floor)  #\.)
+				(t #\Space)))))))
