@@ -42,11 +42,14 @@
 
 
 ;;; Package defining
-(defvar cl-user::__yadril-package-once__
+#-(or yadril yadril2)
+(progn
   (defpackage :yadril2
     (:nicknames :yadril)
     (:documentation "Contains yadril code 'n stuff")
-    (:use :common-lisp :cl-charms)))
+    (:use :common-lisp :cl-charms))
+  (push 'yadril cl:*features*)
+  (push 'yadril2 cl:*features*))
 
 ;;; Variable defining
 (defvar *height* 10)
