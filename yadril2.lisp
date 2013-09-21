@@ -33,15 +33,16 @@
 
 ;;; Debugger symbols
 (defvar *swank-debug* nil)
+(defvar *swank-port* 4006)
 
 ;;; Library loading
 #-quicklisp (error "Got quicklisp?")
 #+quicklisp (progn #-cl-charms (ql:quickload :cl-charms) 
-		   #-swank (when *swank-debug* (ql:quickload :swank) (swank:create)))
+		   #-swank (when *swank-debug* (ql:quickload :swank) (swank:create-server :port *swank-port*)))
 
 
 ;;; Package defining
-(defvar cl-user::package-once
+(defvar cl-user::__yadril-package-once__
   (defpackage :yadril2
     (:nicknames :yadril)
     (:documentation "Contains yadril code 'n stuff")
