@@ -14,6 +14,22 @@
 ;;;;
 ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; defclass* in part copyright Xerox Corporation.
+;;;; Copyright statement reproduced below:
+;;;;
+;;;; Copyright (c) 1985, 1986, 1987, 1988, 1989, 1990 Xerox Corporation.
+;;;; All rights reserved.
+;;;;
+;;;; Use and copying of this software and preparation of derivative works based
+;;;; upon this software are permitted. Any distribution of this software or
+;;;; derivative works must comply with all applicable United States export
+;;;; control laws.
+;;;;
+;;;; This software is made available AS IS, and Xerox Corporation makes no
+;;;; warranty about the software, its performance or its conformity to any
+;;;; specification.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;;; Debugger symbols
 (defvar *swank-debug* nil)
