@@ -208,8 +208,10 @@
 
 (defun get-level (&optional (lvl *dlvl*) (world world))
   (gethash lvl (levels world)))
-;(defmethod get-coord-of ((obj monster))
-;	)
+(defmethod get-coord-of ((monster monster))
+  (list :x (x obj) :y (y obj) :dlvl (dlvl obj)))
+(defmethod get-coord-of ((monster symbol))
+  (get-coord-of (get-monster monster)))
 
 (defun draw-map (&optional (y1 2) (x1 0))
   (loop for y to *height* and y-curs from y1 to (+ *height* y1 -1)
