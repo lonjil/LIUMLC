@@ -13,22 +13,27 @@
 (defvar *message-history* ())
 (defparameter last-key #\Null)
 (defparameter *quit* nil)
+
+(defun cat-sym/string (&rest blargh)
+  (intern (apply #'concatenate 'string (loop for x in blargh collect (string-upcase (string x))))))
+
 (defun gen-level (&optional (level 1))
-	(if level
-		(let ((world nil))
-			(loop for x to *height*
-				do (loop for y to *width*
-					do (setq world (acons (cons x y) 'floor world))))
-			(setq world
-				(acons (cons (random *height*)
-					   (random *width*))
-					   'down
-					   world))
-			(setq world
-				(acons (cons (random *height*)
-					   (random *width*))
-					   'up
-					   world)))))
+  (if level
+      (let ((world nil))
+	(loop for x to *height*
+	      do (loop for y to *width*
+		       do (setq world (acons (cons x y) 'floor world))))
+	(setq world
+	      (acons (cons (random *height*)
+			   (random *width*))
+		     'down
+		     world))
+	(setq world
+	      (acons (cons (random *height*)
+			   (random *width*))
+		     'up
+		     world))
+	world)))
 (defparameter *world* (make-hash-table :test #'equal))
 (setf (gethash 1 *world*) (gen-level 1))
 (defun getlevel (level)
