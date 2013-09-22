@@ -198,6 +198,9 @@
    (monsters	:accessor	monsters
 		:initform	(gen-monsters)
 		:initarg	:monsters)
+   (entities    :accessor       entities
+		:initform       (make-hash-table)
+		:initarg        :entities
    (items	:accessor	items
 		:initform	(gen-items)
 		:initarg 	:items)
@@ -208,6 +211,8 @@
 
 (defun get-level (&optional (lvl *dlvl*) (world world))
   (gethash lvl (levels world)))
+(defmethod get-monster ((obj symbol) &optional (world *world))
+  (gethash obj (entities *world*)))
 (defmethod get-coord-of ((obj monster))
   (list :x (x obj) :y (y obj) :dlvl (dlvl obj)))
 (defmethod get-coord-of ((obj symbol))
