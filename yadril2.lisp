@@ -218,6 +218,12 @@
 (defmethod get-coord-of ((obj symbol))
   (get-coord-of (get-monster obj)))
 
+(defun add-entity (class name &rest initargs)
+  (let ((ent (apply #'make-instance class initargs))
+	(uid (gen-monster-uid class)))
+    (setf (gethash uid (entities *world*)) ent)
+    (setf (gethash uid (entities *world*)) ent)))
+
 (defun draw-map (&optional (y1 2) (x1 0))
   (loop for y to *height* and y-curs from y1 to (+ *height* y1 -1)
 	do (loop for x to *width* and x-curs from x1 to (+ *width* x1 -1)
